@@ -30,8 +30,8 @@ export class ProductsController {
   }
 
   @Put(':id')
-  updateUser(@Param('id') id: string, @Body() body: UpdateUserDTO) {
-    return this.productsService.updateUser(Number(id), body);
+  updateProduct(@Param('id') id: string, @Body() body: UpdateUserDTO) {
+    return this.productsService.updateProduct(Number(id), body);
   }
 
   @Delete(':id')

@@ -12,7 +12,7 @@ export class ProductsService {
       price: 2000,
     },
     {
-      id: 3,
+      id: 2,
       name: 'limon',
       description: 'fruta citrica',
       price: 1000,
@@ -39,7 +39,7 @@ export class ProductsService {
     return newProduct;
   }
 
-  updateUser(id: number, newProduct: Omit<IUProduct, 'id'>): IUProduct {
+  updateProduct(id: number, newProduct: Omit<IUProduct, 'id'>): IUProduct {
     const product = this.findOne(id);
     Object.assign(product, newProduct);
     return product;
