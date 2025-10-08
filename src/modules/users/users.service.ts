@@ -4,54 +4,41 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { IUser } from '../../interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/entities/user.entity';
+import { Repository } from 'typeorm';
+import { CreateUserDTO } from 'src/dto/create-users.dto';
+import { UpdateUserDTO } from 'src/dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  private users: IUser[] = [
-    {
-      id: 1,
-      name: 'Caro',
-      email: 'caromorales1396@gmail.com',
-      password: '123456',
-      age: 29,
-    },
-    {
-      id: 2,
-      name: 'Dani',
-      email: 'Dani@gmail.com',
-      password: '456',
-    },
-  ];
-  findAll(): IUser[] {
-    return this.users;
+  constructor(
+    @InjectRepository(User)
+    private usersRepo: Repository<User>,
+  ) {}
+  findAll() {
+    return this.usersRepo.find();
   }
-  findOne(id: number): IUser {
-    const userFind = this.users.find((user) => user.id === id);
+  async findOne(id: number) {
+    const userFind = await this.usersRepo.findOne({ where: { id: id } });
     if (!userFind) throw new NotFoundException('usuario no encontrado');
     return userFind;
   }
 
-  createUser(user: Omit<IUser, 'id'>): IUser {
-    const newId =
-      this.users.length > 0 ? this.users[this.users.length - 1].id + 1 : 1;
-    if (user.age && user.age >= 18) {
-      const newUser: IUser = { id: newId, ...user };
-      this.users.push(newUser);
-      return newUser;
-    }
-    throw new BadRequestException('El usuario debe ser mayor de edad');
+  createUser(neewUser: CreateUserDTO) {
+    const userCreate = this.usersRepo.create(neewUser);
+    return this.usersRepo.save(userCreate);
   }
 
-  updateUser(id: number, newUser: Omit<IUser, 'id'>): IUser {
-    const user = this.findOne(id);
-    Object.assign(user, newUser);
-    return user;
+  async updateUser(id: number, updateUser: UpdateUserDTO) {
+    await this.usersRepo.update(id, updateUser);
+    return this.findOne(id);
   }
 
-  remove(id: number): { deleted: boolean } {
-    const index = this.users.findIndex((u) => u.id === id);
-    if (index === -1) throw new NotFoundException('Usuario no encontrado');
-    this.users.splice(index, 1);
+  async remove(id: number) {
+    const result = await this.usersRepo.delete(id);
+    if (result.affected === 0)
+      throw new NotFoundException('usuario no encontrado');
     return { deleted: true };
   }
 }
