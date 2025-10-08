@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 import { User } from './src/entities/user.entity';
 import { DataSource } from 'typeorm';
+import { Product } from './src/entities/product.entity';
 dotenv.config();
 
 export default new DataSource({
@@ -10,6 +11,6 @@ export default new DataSource({
   username: process.env.BD_USERNAME,
   password: process.env.BD_PASSWORD,
   database: process.env.BD_NAME,
-  entities: [User],
+  entities: [User, Product],
   migrations: ['./src/migrations/*.ts'],
 });

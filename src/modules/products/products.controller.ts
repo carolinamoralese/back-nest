@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ProductsService } from '../products/products.service';
 import { CreateProductDTO } from '../../dto/create-products.dto';
-import { UpdateUserDTO } from '../../dto/update-products.dto';
+import { UpdateProductDTO } from '../../dto/update-products.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -30,7 +30,7 @@ export class ProductsController {
   }
 
   @Put(':id')
-  updateProduct(@Param('id') id: string, @Body() body: UpdateUserDTO) {
+  updateProduct(@Param('id') id: string, @Body() body: UpdateProductDTO) {
     return this.productsService.updateProduct(Number(id), body);
   }
 
