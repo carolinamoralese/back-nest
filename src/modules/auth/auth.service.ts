@@ -5,12 +5,14 @@ import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDTO } from 'src/dto/create-users.dto';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepo: Repository<User>,
+    private jwtService: JwtService,
   ) {}
 
   async register(data: CreateUserDTO) {
@@ -38,9 +40,18 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales invalidas');
     }
 
+    const payloadToken = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      age: user.age,
+    };
+
+    const token = await this.jwtService.signAsync(payloadToken);
+
     return {
-      user: { id: user.id, name: user.name, email: user.email, age: user.age },
-      accesToker: `fake-toke ${user.id}-${Date.now()}`,
+      user: { sub: user.id, name: user.name, email: user.email, age: user.age },
+      accesToker: token,
     };
   }
 }
