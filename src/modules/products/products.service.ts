@@ -38,4 +38,20 @@ export class ProductsService {
       throw new NotFoundException('usuario no encontrado');
     return { deleted: true };
   }
+
+  // Me devuelve un producto por su nombre
+  async findByName(name: string) {
+    const normalizedName = name.trim().toLocaleLowerCase('es-CO');
+
+    const productFind = await this.usersRepo
+      .createQueryBuilder('product')
+      .where('LOWER(product.name) = :name', { name: normalizedName })
+      .getOne();
+
+    if (!productFind) {
+      throw new NotFoundException('Producto no encontrado');
+    }
+
+    return productFind;
+  }
 }
